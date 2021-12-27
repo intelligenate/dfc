@@ -1,6 +1,6 @@
 # DFC User Guide
 
-<img src="../img/dfc-drawing.png" alt="dfc-drawing" style="zoom:20%;" />
+<img src="../img/dfc-drawing.png" alt="dfc-drawing" style="zoom:40%;" />
 
 [TOC]
 
@@ -98,27 +98,27 @@ Firmware updates are [located here](https://github.com/intelligenate/dfc/release
 
 3. Connect to DFC with nRF Connect.
 
-    <img src="../img/firmware_update/DFC_fw_1.png" alt="DFC_fw_1" style="zoom:20%;" />
+    <img src="../img/firmware_update/DFC_fw_1.png" alt="DFC_fw_1" style="zoom:40%;" />
 
 4. Once connected go to the DFU tab on the top.
 
-    <img src="../img/firmware_update/DFC_fw_2.png" alt="DFC_fw_2" style="zoom:20%;" />
+    <img src="../img/firmware_update/DFC_fw_2.png" alt="DFC_fw_2" style="zoom:40%;" />
     
 5. Click Open Document Picker and select the firmware file downloaded earlier [from here](https://github.com/intelligenate/dfc/releases).
 
-    <img src="../img/firmware_update/DFC_fw_3.png" alt="DFC_fw_3" style="zoom:20%;" />
+    <img src="../img/firmware_update/DFC_fw_3.png" alt="DFC_fw_3" style="zoom:40%;" />
 
 6. After the file is loaded press Start to upload it to DFC.
 
-    <img src="../img/firmware_update/DFC_fw_4.png" alt="DFC_fw_4" style="zoom:20%;" />
+    <img src="../img/firmware_update/DFC_fw_4.png" alt="DFC_fw_4" style="zoom:40%;" />
 
 7. As it's uploading you'll see a bunch of text on the screen. You can safely ignore this text.
 
-    <img src="../img/firmware_update/DFC_fw_5.png" alt="DFC_fw_5" style="zoom:20%;" />
+    <img src="../img/firmware_update/DFC_fw_5.png" alt="DFC_fw_5" style="zoom:40%;" />
 
 8. After the update is completed you'll see the image below and can close nRF Connect.
 
-    <img src="../img/firmware_update/DFC_fw_6.png" alt="DFC_fw_6" style="zoom:20%;" />
+    <img src="../img/firmware_update/DFC_fw_6.png" alt="DFC_fw_6" style="zoom:40%;" />
 
 # Upcoming Features
 
@@ -182,4 +182,3 @@ Bitte halten Sie sich an die folgenden Anweisungen, um Fehlfunktionen oder Schä
 Das DFC entspricht den relevanten Bestimmungen für die europäische Union RoHS Directive 2011/65/EU, 2015/863/EU & Radio Equipment Directive (RED) 2014/53/EU. Wie alle anderen Elektro- und Elektronikprodukte (EEE) auch, darf das DFC nicht als Hausmüll entsorgt werden. In anderen Gesetzgebungen können alternative Regelungen gültig sein.
 <hr>
 <img src="../img/CE_logo.svg" alt="CE_logo" style="zoom:15%;" /><img src="../img/FCC_logo.png" alt="FCC_logo" style="margin-left: 2.5em;zoom:4%;" /> 
-
