@@ -31,7 +31,7 @@ Hooking up DFC only takes a few minutes to get going and no cable-cutting or per
 5. Recommended: Attach DFC to the back of your tablet with mounting tape or mounting putty. Use zip-ties to run the DFC power cable along the path of your bike's power cable for a clean look.
 6. **Note: Make sure all the cables are pushed in fully before proceeding.**
 
-<img src="/Users/jason/workspace/intelligenate/dfc/img/dfc-on-bike_sm.jpeg" alt="dfc-on-bike_sm" style="zoom:60%;" />
+<img src="../img/dfc-on-bike_sm.jpeg" alt="dfc-on-bike_sm" style="zoom:60%;" />
 
 # Connecting to DFC with your device or app
 
