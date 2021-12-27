@@ -2,7 +2,7 @@
 
 <img src="../img/dfc-drawing.png" alt="dfc-drawing" style="zoom:40%;" />
 
-[TOC]
+
 
 # Features
 
@@ -181,4 +181,5 @@ Bitte halten Sie sich an die folgenden Anweisungen, um Fehlfunktionen oder Schä
 
 Das DFC entspricht den relevanten Bestimmungen für die europäische Union RoHS Directive 2011/65/EU, 2015/863/EU & Radio Equipment Directive (RED) 2014/53/EU. Wie alle anderen Elektro- und Elektronikprodukte (EEE) auch, darf das DFC nicht als Hausmüll entsorgt werden. In anderen Gesetzgebungen können alternative Regelungen gültig sein.
 <hr>
-<img src="../img/CE_logo.svg" alt="CE_logo" style="zoom:15%;" /><img src="../img/FCC_logo.png" alt="FCC_logo" style="margin-left: 2.5em;zoom:4%;" /> 
+
+![CE_FCC](../img/CE_FCC.png)
