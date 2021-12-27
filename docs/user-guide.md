@@ -2,8 +2,6 @@
 
 <img src="../img/dfc-drawing.png" alt="dfc-drawing" style="zoom:40%;" />
 
-[TOC]
-
 # Features
 
 DFC allows the Peloton Bike to communicate with fitness watches, head units, and apps — a feature that’s not available on the stock Bike. It reads power and cadence data in real-time, through a cable connected to your bike, and broadcasts them wirelessly to nearby devices including those built around platforms like Zwift and Garmin. This lets you enjoy the built-in functionality of your bike while simultaneously utilizing features and services that depend on third-party platforms.
