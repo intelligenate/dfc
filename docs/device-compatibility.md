@@ -7,7 +7,7 @@
 | Garmin | FR945 | Watch | Yes |   |   |
 | Garmin | Venu, Insight | Watch | No |   | These watches do not support reading power data from *any* manufacturer but speed and cadence should work |
 | Garmin | Vivoactive 4 | Watch | No | Yes | These watches do not support reading power data from *any* manufacturer but speed and cadence should work |
-| Garmin | FR645 | Watch | No |   | These watches do not support reading power data from *any* manufacturer but speed and cadence should work |
+| Garmin | FR645, FR245 | Watch | No |   | These watches do not support reading power data from *any* manufacturer but speed and cadence should work |
 | Polar | Grit X, Vantage | Watch | Yes |   |   |
 | Cronos | Pace | Watch | Yes |   |   |
 | Garmin | Edge 130, 530, 830 | Cycling Computer | Yes | Yes |   |
