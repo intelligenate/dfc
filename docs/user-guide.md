@@ -72,7 +72,7 @@ These tables are updated to show whether something is known to work with DFC (or
 | Garmin       | Venu, Insight              | Watch            | No              |                           | These watches do not support reading power data from *any* manufacturer but speed and cadence should work                                                         |
 | Garmin       | Vivoactive 4               | Watch            | No              | Yes                       | These watches do not support reading power data from *any* manufacturer but speed and cadence should work                                                         |
 | Garmin       | FR645, FR245               | Watch            | No              |                           | These watches do not support reading power data from *any* manufacturer but speed and cadence should work                                                         |
-| Garmin       | 735XT, Fenix 5             | Watch            | No              |                           | These watches only support the ANT+ wireless protocol which is not compatible with DFC                                                                     |
+| Garmin       | 735XT, Fenix 3             | Watch            | No              |                           | These watches only support the ANT+ wireless protocol which is not compatible with DFC                                                                     |
 | Garmin       | Edge 130, 530, 830         | Cycling Computer | Yes             | Yes                       |                                                                                                                                                                   |
 | Stages Dash  | M50, L50                   | Cycling Computer | Yes             | Yes                       |                                                                                                                                                                   |
 | Wahoo        | Roam v2 (2022)             | Cycling Computer | Yes             | Yes                       |                                                                                                                                                                   |
@@ -86,6 +86,7 @@ These tables are updated to show whether something is known to work with DFC (or
 | Sufferfest  | Yes             |       |
 | Kinomap     | Yes             |       |
 | Wahoo       | Yes             |       |
+| ROUVY       | Yes             |       |
 
 # Firmware Updates
 
