@@ -141,7 +141,7 @@ Adventurous users are welcome to try out the [beta releases here](https://github
 
 ## Can I power DFC with the micro-USB connector on the back of the tablet?
 
-While most USB-C to micro-USB cables don't allow for power going in that direction some users report that USB-OTG cables [such as this one](https://www.amazon.com/dp/B07KP6NTK7) may work. Additionally others have had success with using an [adapter like this](https://www.amazon.com/dp/B01LYYAOIE/) to plug into the back of the tablet, then use the cable that came with DFC to plug into that adapter. 
+While most USB-C to micro-USB cables don't allow for power going in that direction some users report that USB-OTG cables [such as this one](https://www.amazon.com/dp/B07KP6NTK7) may work. Additionally others have had success with using an [adapter like this](https://www.amazon.com/dp/B01LYYAOIE/) to plug into the back of the tablet, then use the cable that came with DFC to plug into that adapter. For those in Europe [this adapter](https://www.amazon.de/dp/B0BKPZD24M) has also been reported to work.
 
 Down the road another option is that DFC can run on a coin cell battery but it's not optimized for that yet. It only lasts for a couple days instead of a few months so it's not advised to try it until it's working well. That would allow for a cleaner connection and no additional cord to run.
 
