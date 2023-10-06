@@ -44,7 +44,9 @@ Hooking up DFC only takes a few minutes to get going and no cable-cutting or per
 # Troubleshooting
 
 * DFC is not showing up on my device or app's pairing screen.
-    * Verify that DFC is powered on. It will blink for the first three minutes it’s powered on. 
+    * Verify that DFC is powered on. It will blink once per second for the first three minutes it’s powered on. You can see the blinking through the ports.
+    * Some users have had trouble with using USB-C to USB-C power supplies. DFC draws so little power that they don't think anything is there and they shut down. For best results, use a power supply that works with the cable that DFC came with.
+    * Some Garmin devices require a firmware update. [Try this update](https://github.com/intelligenate/dfc/releases/tag/power-cadence-beta.3) to fix it. See the [Firmware Updates](#firmware-updates) section below for details on updating.
 * DFC is connected to my device or app but not showing any power data on my connected device.
     * Verify that all connections on DFC and your tablet are tight.
     * Verify that the screen on your tablet shows your power and other metrics. Your tablet must be in a class or set to a scenic or self-paced ride for DFC to receive data. 
@@ -62,6 +64,8 @@ These tables are updated to show whether something is known to work with DFC (or
 
 | Manufacturer | Model                      | Type             | Power & Cadence | Speed & Cadence Only Beta | Notes                                                                                                                                                             |
 | ------------ | -------------------------- | ---------------- | --------------- | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Garmin       | Fenix 7, 7S                | Watch            | Yes             | Yes                       |                                                                                                                                                                   |
+| Garmin       | Epix (gen 2)               | Watch            | Yes             | Yes                       |                                                                                                                                                                   |
 | Garmin       | Fenix 6X, 6 Pro, 6 Saffire | Watch            | Yes             | Yes                       |                                                                                                                                                                   |
 | Garmin       | Fenix 6, Fenix 6S          | Watch            | Yes*            |                           | *Dropouts were causing issues with the base Fenix 6 models. [This update](https://github.com/intelligenate/dfc/releases/tag/power-cadence-beta.3) fixes it. See the [Firmware Updates](#firmware-updates) section below for details on updating.* |
 | Garmin       | Fenix 5X                   | Watch            | Yes             |                           |                                                                                                                                                                   |
