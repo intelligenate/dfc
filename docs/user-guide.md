@@ -74,6 +74,7 @@ These tables are updated to show whether something is known to work with DFC (or
 | Polar        | Grit X, Vantage            | Watch            | Yes             |                           |                                                                                                                                                                   |
 | Cronos       | Pace                       | Watch            | Yes             |                           |                                                                                                                                                                   |
 | Garmin       | Venu, Insight              | Watch            | No              |                           | These watches do not support reading power data from *any* manufacturer but speed and cadence should work                                                         |
+| Garmin       | Venu 3                     | Watch            | No              | Yes                       | Garmin states that the Venu 3 supports power meters but it appears only ANT+ power meters are supported and DFC does not broadcast ANT+. The Venu 3 does support the speed and cadence beta firmware. See the [Firmware Updates](#firmware-updates) section below for details on updating. |
 | Garmin       | Vivoactive 4               | Watch            | No              | Yes                       | These watches do not support reading power data from *any* manufacturer but speed and cadence should work                                                         |
 | Garmin       | FR645, FR245               | Watch            | No              |                           | These watches do not support reading power data from *any* manufacturer but speed and cadence should work                                                         |
 | Garmin       | 735XT, Fenix 3             | Watch            | No              |                           | These watches only support the ANT+ wireless protocol which is not compatible with DFC                                                                     |
@@ -96,8 +97,9 @@ These tables are updated to show whether something is known to work with DFC (or
 
 Firmware updates are [located here](https://github.com/intelligenate/dfc/releases). To update the firmware or try out a beta release follow these steps.
 
-1. Download the nRF Connect for Mobile app [from here](https://www.nordicsemi.com/Products/Development-tools/nRF-Connect-for-mobile). 
+1. Download the nRF Connect app for [mobile](https://www.nordicsemi.com/Products/Development-tools/nRF-Connect-for-mobile) or [desktop](https://www.nordicsemi.com/Products/Development-tools/nrf-connect-for-desktop). 
     * nRF Connect is a third-party app developed by the maker of the wireless chipset used in DFC. It allows you to perform wireless firmware updates on DFC.
+    * Some users have reported issues using the nRF Connect app for Andriod so we recommend the iOS app or the desktop version.
 
 2. Download the firmware you want to install [from here](https://github.com/intelligenate/dfc/releases). 
 
