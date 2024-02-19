@@ -100,9 +100,9 @@ These tables are updated to show whether something is known to work with DFC (or
 
 Firmware updates are [located here](https://github.com/intelligenate/dfc/releases). To update the firmware or try out a beta release follow these steps.
 
-1. Download the nRF Connect app for [mobile](https://www.nordicsemi.com/Products/Development-tools/nRF-Connect-for-mobile) or [desktop](https://www.nordicsemi.com/Products/Development-tools/nrf-connect-for-desktop). 
+1. Download the nRF Connect app for [iOS](https://apps.apple.com/us/app/nrf-connect-for-mobile/id1054362403) or [desktop](https://www.nordicsemi.com/Products/Development-tools/nrf-connect-for-desktop). Please note that the desktop version requires the use of a $10 USB dongle [available here](https://www.mouser.com/ProductDetail/Nordic-Semiconductor/nRF52840-Dongle?qs=gTYE2QTfZfTbdrOaMHWEZg%3D%3D). 
     * nRF Connect is a third-party app developed by the maker of the wireless chipset used in DFC. It allows you to perform wireless firmware updates on DFC.
-    * Some users have reported issues using the nRF Connect app for Andriod so we recommend the iOS app or the desktop version.
+    * Some users have reported issues using the [nRF app for Andriod](https://play.google.com/store/apps/details?id=no.nordicsemi.android.dfu&hl=en_US&gl=US&pli=1), given this we recommend the iOS app.
 
 2. Download the firmware you want to install [from here](https://github.com/intelligenate/dfc/releases). 
 
@@ -130,11 +130,7 @@ Firmware updates are [located here](https://github.com/intelligenate/dfc/release
 
     <img src="../img/firmware_update/DFC_fw_4.png" alt="DFC_fw_4" style="zoom:40%;" />
 
-7. As it's uploading you'll see a bunch of text on the screen. You can safely ignore this text.
-
-    <img src="../img/firmware_update/DFC_fw_5.png" alt="DFC_fw_5" style="zoom:40%;" />
-
-8. After the update is completed you'll see the image below and can close nRF Connect.
+7. After the update is completed you'll see the image below and can close nRF Connect.
 
     <img src="../img/firmware_update/DFC_fw_6.png" alt="DFC_fw_6" style="zoom:40%;" />
 
