@@ -49,7 +49,8 @@ Hooking up DFC only takes a few minutes to get going and no cable-cutting or per
     * Some Garmin devices require a firmware update. [Try this update](https://github.com/intelligenate/dfc/releases/tag/power-cadence-beta.4) to fix it. See the [Firmware Updates](#firmware-updates) section below for details on updating.
 * DFC is connected to my device or app but not showing any power data on my connected device.
     * Verify that all connections on DFC and your tablet are tight.
-    * Verify that the screen on your tablet shows your power and other metrics. Your tablet must be in a class or set to a scenic or self-paced ride for DFC to receive data. 
+    * Verify that the screen on your tablet shows your power and other metrics.
+    * Your tablet must be in a class or set to just ride a scenic or self-paced ride for DFC to receive data. 
 * DFC is connected to my device or app but the tablet screen does not show any power data.
     * Verify that all connections on DFC and your tablet are tight.
     * Check the tablet screen for messages stating that there are loose connections. If so, recheck all connections. If there are no messages on the tablet screen then exit and restart the class you were doing.
