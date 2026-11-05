@@ -1,0 +1,30 @@
+# Vendored Nordic SDKs (large, external — fetched separately, not committed)
+/nrf5_sdk/
+/src/nordic_sdk16/
+
+# Build output
+/src/nordic/armgcc/_build/
+/src/arduino/IrieTron_3030/build/
+/src/arduino/IrieTron_3030/
+
+# Claude Code local config
+/.claude/
+
+# Large binary firmware artifacts, backups, and DFU packages
+*.hex
+*.bin
+*.zip
+/beta_fws/
+/dfc-power-cadence-beta.4/
+
+# Local artifacts
+/screenshots/
+*.log
+.DS_Store
+
+# open bootloader build output
+src/nordic/bootloader/_build/
+
+# Personal ride exports (Peloton API) used to fit the speed curve
+/captures/
+__pycache__/
