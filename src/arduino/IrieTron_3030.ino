@@ -21,8 +21,8 @@ limitations under the License.
 *********************************************************************/
 #include <bluefruit.h>
 #include <Arduino.h>
-#include <Adafruit_NeoPixel.h>
 #include <stdint.h>
+
 
 #define UUID16_SVC_FITNESS_MACHINE                      0x1826
 //#define UUID16_CHR_FITNESS_MACHINE_STATUS               0x2ADA // not used
@@ -37,12 +37,85 @@ limitations under the License.
 #define DEBUG_CAD     false
 #define POW_CAD       false
 
-// NeoPixel setup
-#define NEOPIXEL_VERSION_STRING "Neopixel v2.0"
-#define PIN                     PIN_NEOPIXEL   /* Pin used to drive the NeoPixels */
-uint8_t components = 3;     // only 3 and 4 are valid values
-uint8_t *pixelBuffer = NULL;
-Adafruit_NeoPixel neopixel = Adafruit_NeoPixel(1, PIN, NEO_GRB + NEO_KHZ800);
+// ── Legacy UART (non-DMA) for Peloton serial ──────────────────────
+// The DFC original firmware uses legacy UART (ENABLE=4) on P0.26/P0.27.
+// Arduino Serial1 forces UARTE/DMA (ENABLE=8) which doesn't work.
+// These functions bypass Serial1 entirely.
+#define PELOTON_RX_PIN  26  // P0.26
+#define PELOTON_TX_PIN  27  // P0.27
+#define PELOTON_BAUD    0x004EA000  // 19200 baud register value
+
+void peloton_uart_init() {
+  // === GPIO setup — verified from hardware analysis ===
+
+  // P0.30 LOW — original firmware does this at boot
+  NRF_P0->OUTCLR = (1UL << 30);
+  NRF_P0->PIN_CNF[30] = 1;  // Output
+
+  // RTS (P0.05) LOW — enables SP3222 RS-232 transceiver.
+  // SP3222 FORCEOFF is tied to RTS: LOW = transceiver ON, HIGH = OFF.
+  NRF_P0->OUTCLR = (1UL << 5);
+  NRF_P0->PIN_CNF[5] = 1;  // Output
+
+  // CTS (P0.07) LOW — not strictly needed without HWFC but keep consistent
+  NRF_P0->OUTCLR = (1UL << 7);
+  NRF_P0->PIN_CNF[7] = 1;  // Output
+
+  // === UART peripheral setup ===
+
+  // Disable any existing UART/UARTE on this peripheral
+  NRF_UARTE0->ENABLE = 0;
+  NRF_UART0->ENABLE = 0;
+
+  // Configure pins — RTS/CTS disconnected (driven by GPIO above)
+  NRF_UART0->PSEL.TXD = PELOTON_TX_PIN;
+  NRF_UART0->PSEL.RXD = PELOTON_RX_PIN;
+  NRF_UART0->PSEL.RTS = 0xFFFFFFFF;  // disconnected
+  NRF_UART0->PSEL.CTS = 0xFFFFFFFF;  // disconnected
+
+  // Configure UART: 19200 baud, no parity, no flow control
+  NRF_UART0->BAUDRATE = PELOTON_BAUD;
+  NRF_UART0->CONFIG = 0;
+
+  // Enable in legacy UART mode (not UARTE/DMA)
+  NRF_UART0->ENABLE = 4;
+
+  // Clear any pending events
+  NRF_UART0->EVENTS_RXDRDY = 0;
+  NRF_UART0->EVENTS_ERROR = 0;
+  NRF_UART0->ERRORSRC = 0xF;  // Clear all error flags
+
+  // Start receiving
+  NRF_UART0->TASKS_STARTRX = 1;
+}
+
+bool peloton_uart_available() {
+  // Check for errors and recover
+  if (NRF_UART0->EVENTS_ERROR) {
+    NRF_UART0->EVENTS_ERROR = 0;
+    NRF_UART0->ERRORSRC = NRF_UART0->ERRORSRC;
+    NRF_UART0->TASKS_STARTRX = 1;  // Restart receiver after error
+  }
+  // Check if UART was disabled (e.g., by USB/Serial init)
+  if (NRF_UART0->ENABLE != 4) {
+    peloton_uart_init();  // Re-initialize
+  }
+  return NRF_UART0->EVENTS_RXDRDY != 0;
+}
+
+uint8_t peloton_uart_read() {
+  NRF_UART0->EVENTS_RXDRDY = 0;
+  return (uint8_t)NRF_UART0->RXD;
+}
+
+// Speed computation constants (indoor bike assumptions)
+// 700x25c tire circumference in meters
+#define WHEEL_CIRCUMFERENCE  2.105
+// Typical indoor bike gear ratio (chainring/cog)
+#define GEAR_RATIO           3.5
+
+// DFC board LED on P0.28
+#define DFC_LED_PIN  28
 
 /* Service Definitions from BLEUuid.h
  * Cycling Power Service:       0x1818
@@ -66,7 +139,7 @@ BLEBas blebas;    // BAS (Battery Service) helper class instance
 int16_t prevPower = 100;  // Used for randomWalk
 float revCount = 0;
 uint16_t lastRevTime = 0;
-uint32_t wheelRevs = 0;
+// wheelRevs removed — CSC service not active
 long lastNotify = millis();
 
 // Struct to hold and return power and cadence measurements
@@ -85,18 +158,16 @@ struct powerAndCadence pAndC = {
 
 void setup()
 {
+  // DFC board LED setup (P0.28)
+  NRF_P0->PIN_CNF[DFC_LED_PIN] = 1;  // Output
+  NRF_P0->OUTSET = (1UL << DFC_LED_PIN);  // LED on
+
   if(DEBUG){
     Serial.begin(115200);
-    while ( !Serial ) delay(10);   // for nrf52840 with native usb
-  
+    for (int i = 0; i < 200 && !Serial; i++) delay(10);
     Serial.println("Initializing the Coffee Cycling Meter");
     Serial.println("-----------------------\n");
   }
-
-  // Config Neopixels
-  neopixel.begin();
-  neopixel.setPixelColor(0, neopixel.Color(0, 150, 0)); // Green
-  neopixel.show();   // Send the updated pixel colors to the hardware.
 
   // Initialize the Bluefruit module with Peripheral = 2, Central = 0
 //  Bluefruit.begin();
@@ -133,7 +204,17 @@ void setup()
     Serial.println("\nAdvertising");  
   }  
 
-  Serial1.begin(19200);  //Serial rate of Peloton
+  // Delay to let Bluefruit FreeRTOS tasks finish initialization
+  delay(500);
+  peloton_uart_init();  // Legacy UART on P0.26/P0.27 at 19200 baud
+  if(DEBUG){
+    Serial.print("UART0 ENABLE=");
+    Serial.println(NRF_UART0->ENABLE);
+    Serial.print("UART0 RXD pin=");
+    Serial.println(NRF_UART0->PSEL.RXD);
+    Serial.print("UART0 TXD pin=");
+    Serial.println(NRF_UART0->PSEL.TXD);
+  }
 }
 
 void startAdv(void)
@@ -339,20 +420,17 @@ void setupFTMS(void){
   //    B2:3      = SINT16  - 16-bit Instantaneous Power
   indoorBikeDataCharacteristic.setProperties(CHR_PROPS_NOTIFY);
   indoorBikeDataCharacteristic.setPermission(SECMODE_OPEN, SECMODE_NO_ACCESS);
-  indoorBikeDataCharacteristic.setFixedLen(10);  // TODO figure out length, 4 per measurement?
+  indoorBikeDataCharacteristic.setFixedLen(10);  // 5 x uint16_t = 10 bytes
   indoorBikeDataCharacteristic.setCccdWriteCallback(cccd_callback);  // Optionally capture CCCD updates
   indoorBikeDataCharacteristic.begin();
 
-  // Flag size is 16 bit
-  uint16_t indoorBikeData[10]; // TODO Figure out size, 2 per measurement?
-  indoorBikeData[0] = 0x64;//01100100; // Set the flags, instantaneous speed (bit 0=0), instantaneous cadence (bit 2), resistance (bit 5), instantaneous power (bit 6)
-  indoorBikeData[1] = 0; // Speed, uint16, Kilometer per hour with a resolution of 0.01
-  indoorBikeData[2] = 0; // Cadence, uint16, 1/minute with a resolution of 0.5
-  indoorBikeData[3] = 0; // Resistance, sint16, Unitless with a resolution of 1
-  indoorBikeData[4] = 0; // Power, sint16, Watts with a resolution of 1
-//  indoorBikeData[5] = 0; // 
-//  indoorBikeData[6] = 0; // 
-//  indoorBikeData[7] = 0; // 
+  // Indoor Bike Data: flags(2) + speed(2) + cadence(2) + resistance(2) + power(2) = 10 bytes
+  uint16_t indoorBikeData[5];
+  indoorBikeData[0] = 0x64; // flags: instantaneous speed (bit 0=0), cadence (bit 2), resistance (bit 5), power (bit 6)
+  indoorBikeData[1] = 0; // Speed, uint16, km/h with resolution of 0.01
+  indoorBikeData[2] = 0; // Cadence, uint16, 1/min with resolution of 0.5
+  indoorBikeData[3] = 0; // Resistance, sint16, unitless
+  indoorBikeData[4] = 0; // Power, sint16, Watts
   indoorBikeDataCharacteristic.write(indoorBikeData, sizeof(indoorBikeData));  //data,length
 
 
@@ -362,21 +440,20 @@ void setupFTMS(void){
   // target settings field is 32 bits but all are set to 0
   fitnessFeatureCharacteristic.setProperties(CHR_PROPS_READ);
   fitnessFeatureCharacteristic.setPermission(SECMODE_OPEN, SECMODE_NO_ACCESS);
-  fitnessFeatureCharacteristic.setFixedLen(4);
+  fitnessFeatureCharacteristic.setFixedLen(8);  // FTMS spec: 4-byte Machine Features + 4-byte Target Setting Features
   fitnessFeatureCharacteristic.begin();
-  //1 Cadence Supported
-  //7 Resistance Level Supported
-  //14 Power Measurement Supported
-  // uint8_t featureFlag[4] = {0,0,0x40,0x82};  // 2x 32bit flag
-//  uint8_t featureFlag[4] = {0x82,0x40,0,0};  // 2x 32bit flag
-//  uint8_t featureFlag[4] = {0x40,0x82,0,0};  // 2x 32bit flag
-  uint8_t featureFlag[4];  // 2x 32bit flag
-  featureFlag[0] = 0x82;
-  featureFlag[1] = 0x40;
+  // Fitness Machine Features (bits): 1=Cadence, 7=Resistance Level, 14=Power Measurement
+  // Target Setting Features: none supported (all zeros)
+  uint8_t featureFlag[8];
+  featureFlag[0] = 0x82;  // bits 1 (Cadence) + 7 (Resistance Level)
+  featureFlag[1] = 0x40;  // bit 14 (Power Measurement)
   featureFlag[2] = 0x00;
   featureFlag[3] = 0x00;
-//  uint8_t featureFlag[4] = {0,0,0,8}; // for power and cadence
-  fitnessFeatureCharacteristic.write(featureFlag, sizeof(featureFlag));  //(data,length) data is 32bit flag with bit 3 on "index="3" size="1" name="Crank Revolution Data Supported""
+  featureFlag[4] = 0x00;  // Target Setting Features (none)
+  featureFlag[5] = 0x00;
+  featureFlag[6] = 0x00;
+  featureFlag[7] = 0x00;
+  fitnessFeatureCharacteristic.write(featureFlag, sizeof(featureFlag));
 }
 
 
@@ -470,44 +547,28 @@ int16_t randomWalk(){
  * Map the power level to a power zone and put out a different color for each zone.
  */
  void powerToZoneColor(){
-  if(pAndC.power < 148){  // zone 1
-    neopixel.setPixelColor(0, neopixel.Color(69,117,180)); 
-    neopixel.show();   
-  } else if(pAndC.power > 147 && pAndC.power < 201){  // zone 2
-    neopixel.setPixelColor(0, neopixel.Color(145,191,219)); 
-    neopixel.show();
-  } else if(pAndC.power > 200 && pAndC.power < 241){  // zone 3
-    neopixel.setPixelColor(0, neopixel.Color(224,243,248)); 
-    neopixel.show();
-  } else if(pAndC.power > 240 && pAndC.power < 281){  // zone 4
-    neopixel.setPixelColor(0, neopixel.Color(254,224,144)); 
-    neopixel.show();
-  } else if(pAndC.power < 280 && pAndC.power < 321){  // zone 5
-    neopixel.setPixelColor(0, neopixel.Color(252,141,89)); 
-    neopixel.show();
-  } else if(pAndC.power > 320 ){  // zone 6
-    neopixel.setPixelColor(0, neopixel.Color(215,48,39)); 
-    neopixel.show();
-  } 
+  // NeoPixel removed — DFC board has no NeoPixel
+  // Toggle DFC LED (P0.28) instead
+  NRF_P0->OUT ^= (1UL << DFC_LED_PIN);
  }
 
-powerAndCadence readPower(){
-  if ( Serial1.available())// >= MESSAGE_BYTES)
+struct powerAndCadence readPower(){
+  if ( peloton_uart_available())// >= MESSAGE_BYTES)
   {
-    if( Serial1.read() == HEADER)
+    if( peloton_uart_read() == HEADER)
     {
-      int devID = Serial1.read();
-      int measDigits = Serial1.read(); // not using this for now
+      int devID = peloton_uart_read();
+      int measDigits = peloton_uart_read(); // not using this for now
       if(devID == CAD_ID)
       {
-        char b3 = Serial1.read();
+        char b3 = peloton_uart_read();
         int i3 = b3 - '0';
-        char b2 = Serial1.read();
+        char b2 = peloton_uart_read();
         int i2 = b2 - '0';
-        char b1 = Serial1.read();
+        char b1 = peloton_uart_read();
         int i1 = b1 - '0';
         int val1 = 100*i1 + 10*i2 + i3;
-        byte checkSum = Serial1.read();
+        byte checkSum = peloton_uart_read();
         byte sum = b3 + b2 + b1 + measDigits + devID + HEADER;
         if(sum != checkSum) {
 //          pAndC.cadence = -1;  // measurement is invalid
@@ -533,7 +594,7 @@ powerAndCadence readPower(){
           Serial.println(pAndC.cadence);
         }
         
-        int footer = Serial1.read();
+        int footer = peloton_uart_read();
 
         if(footer != FOOTER){
 //          pAndC.cadence = -1;  // measurement is invalid
@@ -541,24 +602,23 @@ powerAndCadence readPower(){
         }
       }
       else if(devID == POW_ID){
-        char b5 = Serial1.read();
+        char b5 = peloton_uart_read();
         int i5 = b5 - '0';
-        char b4 = Serial1.read();
+        char b4 = peloton_uart_read();
         int i4 = b4 - '0';
-        char b3 = Serial1.read();
+        char b3 = peloton_uart_read();
         int i3 = b3 - '0';
-        char b2 = Serial1.read();
+        char b2 = peloton_uart_read();
         int i2 = b2 - '0';
-        char b1 = Serial1.read();
+        char b1 = peloton_uart_read();
         int i1 = b1 - '0';
         float val = 1000*i1 + 100*i2 + 10*i3 + i4 + 0.1*i5;  // Use a float because the last value is a tenth for some reason
-        byte checkSum = Serial1.read();
+        byte checkSum = peloton_uart_read();
         byte sum = b5 + b4 + b3 + b2 + b1 + measDigits + devID + HEADER;
         if(sum != checkSum) {
 //          pAndC.power = -1;  // measurement is invalid
           pAndC.powerValid = false;  // measurement is invalid
-          neopixel.setPixelColor(0, neopixel.Color(0, 0, 0)); // black
-          neopixel.show();   // Send the updated pixel colors to the hardware.
+          // Power checksum fail — no visual indicator
         } else{
           pAndC.power = (int16_t) val;  // Convert it to an int
           pAndC.powerValid = true;
@@ -585,7 +645,7 @@ powerAndCadence readPower(){
           Serial.println(pAndC.power);
         }        
         
-        int footer = Serial1.read();
+        int footer = peloton_uart_read();
         
         if(footer != FOOTER){
           pAndC.powerValid = false;
@@ -593,16 +653,16 @@ powerAndCadence readPower(){
         }
       }
       else if(devID == RES_ID){ //Read the resistance
-        char b4 = Serial1.read();
+        char b4 = peloton_uart_read();
         int i4 = b4 - '0';
-        char b3 = Serial1.read();
+        char b3 = peloton_uart_read();
         int i3 = b3 - '0';
-        char b2 = Serial1.read();
+        char b2 = peloton_uart_read();
         int i2 = b2 - '0';
-        char b1 = Serial1.read();
+        char b1 = peloton_uart_read();
         int i1 = b1 - '0';
         int val1 = 1000*i1 + 100*i2 + 10*i3 + i4;
-        byte checkSum = Serial1.read();
+        byte checkSum = peloton_uart_read();
         byte sum = b4 + b3 + b2 + b1 + measDigits + devID + HEADER;
         
         if(DEBUG){
@@ -630,7 +690,7 @@ powerAndCadence readPower(){
           pAndC.resistanceValid = true;
         }
 
-        int footer = Serial1.read();
+        int footer = peloton_uart_read();
 
         if(footer != FOOTER){
           pAndC.resistanceValid = false;  // measurement is invalid
@@ -648,18 +708,16 @@ powerAndCadence readPower(){
       return pAndC;
     }
     else{
-      neopixel.setPixelColor(0, neopixel.Color(250, 250, 250)); // white
-      neopixel.show();   // Send the updated pixel colors to the hardware.
+      // Non-header byte — skip
       delay(random(10,30));  // jitter the delay to prevent locks
       return pAndC;
     }
   }
   else{
     if(DEBUG){
-      Serial.println("Serial1 not available");
+      Serial.println("UART: no data");
     }
-    neopixel.setPixelColor(0, neopixel.Color(70, 39, 89)); // Dark purple
-    neopixel.show();   // Send the updated pixel colors to the hardware.
+    // No UART data available
     delay(random(90,110));  // jitter the delay to prevent locks
     return pAndC;
   }
@@ -667,8 +725,15 @@ powerAndCadence readPower(){
 
 void loop()
 {
-  digitalToggle(LED_RED);
-  
+  NRF_P0->OUT ^= (1UL << DFC_LED_PIN);  // Toggle DFC LED
+
+  // Debug: check if UART config was overwritten
+  if(DEBUG && NRF_UART0->ENABLE != 4) {
+    Serial.print("!!! UART ENABLE changed to: ");
+    Serial.println(NRF_UART0->ENABLE);
+    peloton_uart_init();  // Re-initialize
+  }
+
   if ( Bluefruit.connected() ) {
     
 //    int16_t power = (int16_t) randomWalk();  // for testing
@@ -726,22 +791,16 @@ void loop()
     powerData[6] = 0;
     powerData[7] = 0;
 
-    uint16_t fitnessData[10];
-    fitnessData[0] = 0x64; //01100100; // Set the flags, instantaneous speed (bit 0==0), instantaneous cadence (bit 2), resistance (bit 5), instantaneous power (bit 6)
-    fitnessData[1] = 0; //speed in km/h with 0.01 resolution
-    fitnessData[2] = pAndC.cadence << 1; 
+    // Compute speed from cadence: speed (km/h) = cadence * wheel_circ * gear_ratio * 60 / 1000
+    float speed_kmh = pAndC.cadence * WHEEL_CIRCUMFERENCE * GEAR_RATIO * 60.0 / 1000.0;
+    uint16_t speed_ftms = (uint16_t)(speed_kmh * 100);  // FTMS unit: km/h with 0.01 resolution
+
+    uint16_t fitnessData[5];
+    fitnessData[0] = 0x64; // flags: speed (bit 0=0), cadence (bit 2), resistance (bit 5), power (bit 6)
+    fitnessData[1] = speed_ftms;
+    fitnessData[2] = pAndC.cadence << 1;  // FTMS cadence unit: 0.5 resolution, so RPM * 2
     fitnessData[3] = pAndC.resistance;
     fitnessData[4] = pAndC.power;
-
-    wheelRevs = wheelRevs + 1;  // 32bit cumulative wheel revolutions
-    uint8_t speedData[7]; // for speed only
-    speedData[0] = 0x01; // Set the flags, speed only
-    speedData[1] = (wheelRevs >> 24) & 0xFF; // Wheel Revolutions
-    speedData[2] = (wheelRevs >> 16) & 0xFF; // Wheel Revolutions
-    speedData[3] = (wheelRevs >> 8) & 0xFF; // Wheel Revolutions
-    speedData[4] = wheelRevs & 0xFF; // Wheel Revolutions
-    speedData[5] = highByte(intRevTime); // Last Wheel Event Time
-    speedData[6] = lowByte(intRevTime); // Last Wheel Event Time
 
    
     // Use .notify instead of .write
@@ -781,20 +840,7 @@ void loop()
          Serial.println("FTMS ERROR: Notify not set in the CCCD or not connected!");        
        }
      }
-     if(cyclingSpeedCadMeasurement.notify(speedData, sizeof(speedData))){
-       lastNotify = millis();
-       if(DEBUG){
-         Serial.print("Speed Measurements updated to: "); 
-         Serial.print(wheelRevs);
-         Serial.print(" wheel revs, intRevTime: ");
-          Serial.println(intRevTime);
-       }
-       
-     }else{
-       if(DEBUG){
-         Serial.println("FTMS ERROR: Notify not set in the CCCD or not connected!");        
-       }
-     }
+     // CSC notification removed — setupCSC() is not called, service not active
     } else {
       if(DEBUG){
         Serial.print("timeToUpdate ");
