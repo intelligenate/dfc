@@ -175,6 +175,10 @@ Firmware updates are [located here](https://github.com/intelligenate/dfc/release
 
 Adventurous users are welcome to try out the [latest beta release here](https://github.com/intelligenate/dfc/releases). If you do so please report back what device you used and whether all the features worked. See the [Firmware Updates](#firmware-updates) section for details on how to update the firmware. After trying a beta release you can always revert back to the production release.
 
+# Forked Releases
+
+An unofficial, unsupported (by Intelligenate), use at your own risk release is available [here](https://github.com/belcboo/dfc/tree/release). This fork carries an independent, unofficial firmware for the DFC board, rebuilt from scratch on the SDK the stock units run. Use of it requires a JTAG programmer. 
+
 # FAQs
 
 ## Can I power DFC with the micro-USB connector on the back of the tablet?
