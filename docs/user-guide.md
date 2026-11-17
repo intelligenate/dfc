@@ -66,10 +66,13 @@ both.
 # Troubleshooting
 
 * DFC is not showing up on my device or app's pairing screen.
-    * Verify that DFC is powered on. It will blink for the first three minutes it’s powered on. 
+    * Verify that DFC is powered on. It will blink once per second for the first three minutes it’s powered on. You can see the blinking through the ports.
+    * Some users have had trouble with using USB-C to USB-C power supplies. DFC draws so little power that they don't think anything is there and they shut down. For best results, use a power supply that works with the cable that DFC came with.
+    * Some Garmin devices require a firmware update. [Try this update](https://github.com/intelligenate/dfc/releases/tag/power-cadence-beta.4) to fix it. See the [Firmware Updates](#firmware-updates) section below for details on updating.
 * DFC is connected to my device or app but not showing any power data on my connected device.
     * Verify that all connections on DFC and your tablet are tight.
-    * Verify that the screen on your tablet shows your power and other metrics. Your tablet must be in a class or set to a scenic or self-paced ride for DFC to receive data. 
+    * Verify that the screen on your tablet shows your power and other metrics.
+    * Your tablet must be in a class or set to just ride a scenic or self-paced ride for DFC to receive data. 
 * DFC is connected to my device or app but the tablet screen does not show any power data.
     * Verify that all connections on DFC and your tablet are tight.
     * Check the tablet screen for messages stating that there are loose connections. If so, recheck all connections. If there are no messages on the tablet screen then exit and restart the class you were doing.
@@ -79,26 +82,35 @@ both.
 
 # Compatibility Tables
 
-Anything that supports reading power data *should* work with DFC. These tables are updated to show whether something is known to work with DFC (or not).
+Most modern devices and apps that support reading power data *should* work with DFC. Please note that DFC is not compatible with legacy devices that only support the the ANT+ protocol such as the Garmin Fenix 5 and Wahoo Roam v1 (2019). 
+
+These tables are updated to show whether something is known to work with DFC (or not).
 
 ## Devices
 
 | Manufacturer | Model                      | Type             | Power & Cadence | Speed & Cadence Only Beta | Notes                                                                                                                                                             |
 | ------------ | -------------------------- | ---------------- | --------------- | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Garmin       | Fenix 7 Solar              | Watch            | Yes             |            |                          |
+| Apple        | Watch with WatchOS 10+     | Watch            | Yes             | Yes                       | Apple Watches with WatchOS 10+ work with DFC. [See here](https://www.dcrainmaker.com/2023/07/apple-watch-power-meters-support-everything-wanted.html) for how to set it up. |
+| Garmin       | Fenix 7, 7S                | Watch            | Yes             | Yes                       | *A watch beta in early 2024 was causing issues with these. [This update](https://github.com/intelligenate/dfc/releases/tag/power-cadence-beta.4) fixes it. See the [Firmware Updates](#firmware-updates) section below for details on updating.*                                                                                                                                                                  |
+| Garmin       | Epix (gen 2), Epix Pro     | Watch            | Yes             | Yes                       | *A watch beta in early 2024 was causing issues with these. [This update](https://github.com/intelligenate/dfc/releases/tag/power-cadence-beta.4) fixes it. See the [Firmware Updates](#firmware-updates) section below for details on updating.*                                                                                                                                                                  |
 | Garmin       | Fenix 6X, 6 Pro, 6 Saffire | Watch            | Yes             | Yes                       |                                                                                                                                                                   |
-| Garmin       | Fenix 6, Fenix 6S          | Watch            | Yes*            |                           | *Dropouts were causing issues with the base Fenix 6 models. Try [this update](https://github.com/intelligenate/dfc/releases/tag/power-cadence-beta.3) for a fix. See the [Firmware Updates](#firmware-updates) section below for details on updating. |
+| Garmin       | Fenix 6, Fenix 6S          | Watch            | Yes*            |                           | *Dropouts were causing issues with the base Fenix 6 models. [This update](https://github.com/intelligenate/dfc/releases/tag/power-cadence-beta.4) fixes it. See the [Firmware Updates](#firmware-updates) section below for details on updating.* |
 | Garmin       | Fenix 5X                   | Watch            | Yes             |                           |                                                                                                                                                                   |
 | Garmin       | Marq                       | Watch            | Yes             |                           |                                                                                                                                                                   |
 | Garmin       | FR945                      | Watch            | Yes             |                           |                                                                                                                                                                   |
-| Garmin       | Venu, Venu 2, Insight      | Watch            | No              |                           | These watches do not support reading power data from *any* manufacturer but speed and cadence should work                                                         |
-| Garmin       | Vivoactive 4               | Watch            | No              | Yes                       | These watches do not support reading power data from *any* manufacturer but speed and cadence should work                                                         |
-| Garmin       | FR645, FR245               | Watch            | No              |                           | These watches do not support reading power data from *any* manufacturer but speed and cadence should work                                                         |
+| Garmin       | FR265                      | Watch            | Yes              |                           | *A watch beta in early 2024 was causing issues with these. [This update](https://github.com/intelligenate/dfc/releases/tag/power-cadence-beta.4) fixes it. See the [Firmware Updates](#firmware-updates) section below for details on updating.*                                                                                                                                                                   |
+| Garmin       | FR935                      | Watch            | No              |                           |                                                                                                                                                                   |
 | Polar        | Grit X, Vantage            | Watch            | Yes             |                           |                                                                                                                                                                   |
 | Cronos       | Pace                       | Watch            | Yes             |                           |                                                                                                                                                                   |
+| Garmin       | Venu, Venu 2, Insight      | Watch            | No              |                           | These watches do not support reading power data from *any* manufacturer but speed and cadence should work                                                         |
+| Garmin       | Venu 3                     | Watch            | No              | Yes                       | Garmin states that the Venu 3 supports power meters but it appears only ANT+ power meters are supported and DFC does not broadcast ANT+. The Venu 3 does support the speed and cadence beta firmware. See the [Firmware Updates](#firmware-updates) section below for details on updating. |
+| Garmin       | Vivoactive 4               | Watch            | No              | Yes                       | These watches do not support reading power data from *any* manufacturer but speed and cadence should work                                                         |
+| Garmin       | FR645, FR245               | Watch            | No              |                           | These watches do not support reading power data from *any* manufacturer but speed and cadence should work                                                         |
+| Garmin       | 735XT, Fenix 3             | Watch            | No              |                           | These watches only support the ANT+ wireless protocol which is not compatible with DFC                                                                     |
 | Garmin       | Edge 130, 530, 830         | Cycling Computer | Yes             | Yes                       |                                                                                                                                                                   |
 | Stages Dash  | M50, L50                   | Cycling Computer | Yes             | Yes                       |                                                                                                                                                                   |
-
+| Wahoo        | Roam v2 (2022)             | Cycling Computer | Yes             | Yes                       |                                                                                                                                                                   |
+| Wahoo        | Roam v1 (2019)             | Cycling Computer | No              | No                        | This device only supports the ANT+ wireless protocol which is not compatible with DFC                                                                    |
 ## Apps
 
 | Application | Power & Cadence | Notes |
@@ -108,13 +120,15 @@ Anything that supports reading power data *should* work with DFC. These tables a
 | Sufferfest  | Yes             |       |
 | Kinomap     | Yes             |       |
 | Wahoo       | Yes             |       |
+| ROUVY       | Yes             |       |
 
 # Firmware Updates
 
 Firmware updates are [located here](https://github.com/intelligenate/dfc/releases). To update the firmware or try out a beta release follow these steps.
 
-1. Download the nRF Connect for Mobile app [from here](https://www.nordicsemi.com/Products/Development-tools/nRF-Connect-for-mobile). 
+1. Download the nRF Connect app for [iOS](https://apps.apple.com/us/app/nrf-connect-for-mobile/id1054362403) or [desktop](https://www.nordicsemi.com/Products/Development-tools/nrf-connect-for-desktop). Please note that the desktop version requires the use of a $10 USB dongle [available here](https://www.mouser.com/ProductDetail/Nordic-Semiconductor/nRF52840-Dongle?qs=gTYE2QTfZfTbdrOaMHWEZg%3D%3D). 
     * nRF Connect is a third-party app developed by the maker of the wireless chipset used in DFC. It allows you to perform wireless firmware updates on DFC.
+    * Some users have reported issues using the [nRF app for Andriod](https://play.google.com/store/apps/details?id=no.nordicsemi.android.dfu&hl=en_US&gl=US&pli=1), given this we recommend the iOS app.
 
 2. Download the firmware you want to install [from here](https://github.com/intelligenate/dfc/releases). 
 
@@ -142,11 +156,7 @@ Firmware updates are [located here](https://github.com/intelligenate/dfc/release
 
     <img src="../img/firmware_update/DFC_fw_4.png" alt="DFC_fw_4" style="zoom:40%;" />
 
-7. As it's uploading you'll see a bunch of text on the screen. You can safely ignore this text.
-
-    <img src="../img/firmware_update/DFC_fw_5.png" alt="DFC_fw_5" style="zoom:40%;" />
-
-8. After the update is completed you'll see the image below and can close nRF Connect.
+7. After the update is completed you'll see the image below and can close nRF Connect.
 
     <img src="../img/firmware_update/DFC_fw_6.png" alt="DFC_fw_6" style="zoom:40%;" />
 
@@ -169,7 +179,7 @@ Adventurous users are welcome to try out the [latest beta release here](https://
 
 ## Can I power DFC with the micro-USB connector on the back of the tablet?
 
-While most USB-C to micro-USB cables don't allow for power going in that direction some users report that USB-OTG cables [such as this one](https://www.amazon.com/dp/B07KP6NTK7) may work. Additionally others have had success with using an [adapter like this](https://www.amazon.com/dp/B01LYYAOIE/) to plug into the back of the tablet, then use the cable that came with DFC to plug into that adapter. 
+While most USB-C to micro-USB cables don't allow for power going in that direction some users report that USB-OTG cables [such as this one](https://www.amazon.com/dp/B07KP6NTK7) may work. Additionally others have had success with using an [adapter like this](https://www.amazon.com/dp/B01LYYAOIE/) to plug into the back of the tablet, then use the cable that came with DFC to plug into that adapter. For those in Europe [this adapter](https://www.amazon.de/dp/B0BKPZD24M) has also been reported to work.
 
 Down the road another option is that DFC can run on a coin cell battery but it's not optimized for that yet. It only lasts for a couple days instead of a few months so it's not advised to try it until it's working well. That would allow for a cleaner connection and no additional cord to run.
 
