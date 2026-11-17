@@ -6,8 +6,9 @@
 
 DFC allows the Peloton Bike to communicate with fitness watches, head units, and apps — a feature that’s not available on the stock Bike. It reads power and cadence data in real-time, through a cable connected to your bike, and broadcasts them wirelessly to nearby devices including those built around platforms like Zwift and Garmin. This lets you enjoy the built-in functionality of your bike while simultaneously utilizing features and services that depend on third-party platforms.
 
-* Supports two simultaneous wireless connections for connecting to both a wearable and app at the same time
-* Wireless device firmware updates for future upgrades
+* Works as a power meter and, new in firmware 2, as a speed sensor
+* Supports two wireless connections for each sensor, so a watch and an app
+  can connect at the same time
 * Open and expandable platform for adding new features down the line
 
 # Connecting DFC to your bike
@@ -33,13 +34,34 @@ Hooking up DFC only takes a few minutes to get going and no cable-cutting or per
 
 # Connecting to DFC with your device or app
 
-1. Follow the directions from your specific application or device for pairing a sensor. See the [Compatibility Tables](#compatibility-table) for apps and devices that are known to work, or not, with DFC.
-    1. DFC acts as a power meter and cadence sensor and will show up in the pairing screen or sensors section of the application/device you are connecting to. 
-    2. For example, in Zwift in the Paired Devices menu: (1) click Power Source and select DFC, then (2) click Cadence and select DFC.
-    3. For example, on a Garmin cycling computer or Fenix watch go to Settings > Sensor > Add Sensor and you will see DFC show up as a power sensor. Once selected your device will also read cadence from DFC with no additional setup required.
-2. Once you do the initial pairing your device will connect to DFC automatically every time you start a ride.
-3. Note: DFC only receives data when live power data is shown on the tablet screen. 
-    1. Your connected device can start recording data before the class starts as long as the power/watts are displayed on the tablet screen. This allows you to string a few classes together and have them show up as one workout on your device.
+With firmware 2, DFC shows up as two sensors:
+
+| Sensor name   | What it is                  | What it sends             |
+| ------------- | --------------------------- | ------------------------- |
+| **DFC**       | Power meter                 | Power and cadence         |
+| **DFC Speed** | Speed and cadence sensor    | Speed and cadence         |
+
+Pair the sensors that your device or app can use. You do not need to pair
+both.
+
+1. Follow the directions from your application or device for pairing a
+   sensor.
+    1. Garmin watch or cycling computer: go to Settings > Sensors > Add
+       Sensor. Add **DFC** as a power sensor. Then add **DFC Speed** as a
+       speed/cadence sensor.
+    2. Zwift: in the Paired Devices menu, select **DFC** as Power Source and
+       as Cadence. Zwift calculates its own speed from your power, so it
+       does not need **DFC Speed**. Zwift lets you select a power source or
+       a speed sensor, not both.
+2. For **DFC Speed**, set the wheel size on your device to **2105 mm**
+   (700x25C). DFC calculates the speed from your power, in the same way as
+   the bike tablet does. Different wheel sizes give differing speed and
+   distance, adjust to your convenience.
+3. After the first pairing, your device connects to DFC automatically each
+   time you start a ride.
+4. DFC receives data only when live power data is shown on the tablet
+   screen. If the tablet stops sending data for more than 5 seconds, DFC
+   sends zero power, cadence and speed.
 
 # Troubleshooting
 
@@ -128,13 +150,20 @@ Firmware updates are [located here](https://github.com/intelligenate/dfc/release
 
     <img src="../img/firmware_update/DFC_fw_6.png" alt="DFC_fw_6" style="zoom:40%;" />
 
-# Upcoming Features
+* Firmware 2 releases have names such as `dfc-2.0.0-beta1-ota.zip`.
+* During the update, DFC shows up in the app with a different name for
+  about one minute. This is normal.
+* After an update from firmware 1 to firmware 2, remove DFC from your
+  watch and add it again if the watch does not find it. Then also add
+  **DFC Speed**.
+* You can go back to an older release at any time. Install the older `.zip`
+  file with the same steps.
 
-## Addition of speed sensor capability
+# Beta Features
 
-We have a prototype of this working but testing with several fitness devices revealed some undesired behavior. Some devices only pick up either power data or speed data but not both.  We're working on this and will include an update once we get it working consistently across devices.
+## Speed sensor capability
 
-Adventurous users are welcome to try out the [beta releases here](https://github.com/intelligenate/dfc/releases). If you do so please report back what device you used and whether all the features worked. See the [Firmware Updates](#firmware-updates) section for details on how to update the firmware. After trying a beta release you can always revert back to the production release.
+Adventurous users are welcome to try out the [latest beta release here](https://github.com/intelligenate/dfc/releases). If you do so please report back what device you used and whether all the features worked. See the [Firmware Updates](#firmware-updates) section for details on how to update the firmware. After trying a beta release you can always revert back to the production release.
 
 # FAQs
 
